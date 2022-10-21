@@ -14,14 +14,17 @@ let rows, columns;
 let training=false
 let classified=false
 let win=false
-let winR,winG,winB
+let winR =255
+let winG=255
+let winB=255
 let winResult
 let d=10
 
 function setup() {
   createCanvas(600, 600);
+  noCursor()
 
-  displayTxt = createP('waiting...')
+  displayTxt = createP('W A I T I N G . . .')
 //colors.csv has 13658 lines
 
 rSlider = createSlider(0, 255, random(255));
@@ -54,15 +57,17 @@ columns=50
 function modelReady(){
   colorNN.normalizeData()
   const trainingOptions = {
-    epochs:100
+    epochs:700
   }
-  colorNN.train(trainingOptions,modelTrained)
+  colorNN.train(trainingOptions,whileTraining, modelTrained)
+}
+function whileTraining(epoch, logs) {
+  console.log(`Epoch: ${epoch} - loss: ${logs.loss.toFixed(2)}`);
 }
 
 function modelTrained(){
   displayTxt.html('done training')
   training=true
-  classify()
 }
 
 function draw() {
@@ -113,9 +118,9 @@ function draw() {
   textSize(15)
   currentRGB = get(mouseX,mouseY)
   if(classified==false){
-    text("R: "+currentRGB[0]+", "+"G: "+currentRGB[1]+", "+"B: "+currentRGB[2],mouseX,mouseY)
+    text("R: "+currentRGB[0]+", "+"G: "+currentRGB[1]+", "+"B: "+currentRGB[2],mouseX+25,mouseY+10)
   }else if (classified==true){
-    text("R: "+currentRGB[0]+", "+"G: "+currentRGB[1]+", "+"B: "+currentRGB[2]+"; about "+confidenceTxt+'% similar',mouseX,mouseY)
+    text("R: "+currentRGB[0]+", "+"G: "+currentRGB[1]+", "+"B: "+currentRGB[2]+"; about "+confidenceTxt+'% similar',mouseX+25,mouseY+10)
 
   }
   if (win==true){
@@ -132,7 +137,10 @@ function draw() {
 
 
   }
-  
+noFill()
+  stroke(winR,winG,winB) 
+  strokeWeight(2)
+  circle(mouseX,mouseY,45)
 }
 
 function mouseClicked(){
